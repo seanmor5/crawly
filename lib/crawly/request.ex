@@ -12,6 +12,7 @@ defmodule Crawly.Request do
             prev_response: nil,
             options: [],
             middlewares: [],
+            meta: %{},
             retries: 0
 
   @type header() :: {key(), value()}
@@ -28,6 +29,7 @@ defmodule Crawly.Request do
           prev_response: %{},
           options: [option()],
           middlewares: [atom()],
+          meta: any(),
           retries: non_neg_integer()
         }
 
@@ -43,7 +45,7 @@ defmodule Crawly.Request do
              options: [term()],
              request: Crawly.Request.t()
 
-  def new(url, headers \\ [], options \\ []) do
+  def new(url, headers \\ [], options \\ [], meta \\ %{}) do
     # Define a list of middlewares which are used by default to process
     # incoming requests
     default_middlewares = [
@@ -56,7 +58,7 @@ defmodule Crawly.Request do
     middlewares =
       Application.get_env(:crawly, :middlewares, default_middlewares)
 
-    new(url, headers, options, middlewares)
+    new(url, headers, options, middlewares, meta)
   end
 
   @doc """
@@ -70,12 +72,13 @@ defmodule Crawly.Request do
              options: [term()],
              middlewares: [term()],
              request: Crawly.Request.t()
-  def new(url, headers, options, middlewares) do
+  def new(url, headers, options, middlewares, meta) do
     %Crawly.Request{
       url: url,
       headers: headers,
       options: options,
-      middlewares: middlewares
+      middlewares: middlewares,
+      meta: meta
     }
   end
 end
